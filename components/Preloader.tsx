@@ -30,6 +30,8 @@ const Preloader: React.FC = () => {
     return () => {
       clearInterval(interval);
       clearTimeout(safety);
+      // Ensure scroll is re-enabled when component unmounts
+      document.body.style.overflow = '';
     };
   }, []);
 
@@ -42,7 +44,7 @@ const Preloader: React.FC = () => {
       setStatusText('Connection Established');
       const hideTimer = setTimeout(() => {
         setHide(true);
-        document.body.style.overflow = ''; // Re-enable scrolling
+        document.body.style.overflow = ''; // Re-enable scrolling explicitly
       }, 500);
       const finishTimer = setTimeout(() => setIsFinished(true), 1300);
       return () => {

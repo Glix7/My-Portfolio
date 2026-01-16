@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 type AnimationType = 'fade-up' | 'fade-down' | 'fade-in' | 'slide-left' | 'slide-right' | 'blur-in' | 'scale-up' | 'rotate-in' | 'flip-up';
 
 interface ScrollRevealProps {
-  children: React.Node;
+  children: React.ReactNode;
   animation?: AnimationType;
   duration?: number;
   delay?: number;
@@ -33,10 +33,11 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
     const element = ref.current;
     if (!element) return;
 
-    // Safety timeout: Ensure content is visible eventually
+    // Fast-fail safety timeout: Ensure content is visible eventually even if observer fails
+    // Reduced timeout to 500ms to prevent long "blank" screens
     const safety = setTimeout(() => {
-      setIsVisible(true);
-    }, 2000 + delay);
+      if (!isVisible) setIsVisible(true);
+    }, 500 + delay);
 
     if (!('IntersectionObserver' in window)) {
       setIsVisible(true);
@@ -57,7 +58,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
       },
       {
         threshold: threshold,
-        rootMargin: '100px 0px', // Start early for better experience
+        rootMargin: '50px 0px', // Start slightly earlier
       }
     );
 
