@@ -1,12 +1,14 @@
 
-import React, { useState } from 'react';
-import { ChevronDown, AlertCircle, CheckCircle, Loader2, Send, MessageSquare, AlertTriangle } from 'lucide-react';
-import { FAQS } from '../constants';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, CheckCircle, Loader2, Send, MessageSquare, AlertTriangle } from 'lucide-react';
 import CardBackground from '../components/CardBackground';
 import ScrollReveal from '../components/ScrollReveal';
 import SpotlightCard from '../components/SpotlightCard';
+import { pb } from '../lib/pocketbase';
+import { Faq } from '../types';
 
 const Contact: React.FC = () => {
+  const [faqs, setFaqs] = useState<Faq[]>([]);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
@@ -16,6 +18,19 @@ const Contact: React.FC = () => {
     subject: '',
     message: ''
   });
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        // Fetch FAQs from PocketBase, sorted by creation date
+        const records = await pb.collection('faqs').getList<Faq>(1, 50, { sort: '+created' });
+        setFaqs(records.items);
+      } catch (err) {
+        console.error("Error fetching FAQs:", err);
+      }
+    };
+    fetchFaqs();
+  }, []);
 
   const toggleFaq = (idx: number) => {
     setActiveFaq(activeFaq === idx ? null : idx);
@@ -33,23 +48,12 @@ const Contact: React.FC = () => {
     setFormStatus('sending');
     
     try {
-        const response = await fetch("https://formspree.io/f/maqqwker", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(formData)
-        });
+        // Create record in 'messages' collection
+        await pb.collection('messages').create(formData);
 
-        if (response.ok) {
-            setFormStatus('success');
-            setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-            setTimeout(() => setFormStatus('idle'), 5000);
-        } else {
-            setFormStatus('error');
-            setTimeout(() => setFormStatus('idle'), 5000);
-        }
+        setFormStatus('success');
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        setTimeout(() => setFormStatus('idle'), 5000);
     } catch (error) {
         console.error("Submission error:", error);
         setFormStatus('error');
@@ -58,11 +62,11 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="w-full pt-32 pb-16 px-6">
+    <div className="w-full pt-28 pb-12 px-6">
       <div className="max-w-6xl mx-auto">
         
         <ScrollReveal animation="fade-up">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-primary uppercase tracking-wider mb-6">
                   <MessageSquare size={14} /> Let's Chat
                </div>
@@ -74,12 +78,10 @@ const Contact: React.FC = () => {
         </ScrollReveal>
 
         {/* Form Section - Centered */}
-        <div className="max-w-3xl mx-auto mb-24">
+        <div className="max-w-3xl mx-auto mb-16">
             <ScrollReveal animation="blur-in" duration={1000}>
-              {/* Removed SpotlightCard to remove mouse glow */}
               <div className="rounded-[2rem] bg-[#000000] border border-white/10 shadow-2xl overflow-hidden relative">
                   <div className="p-8 md:p-12 relative group">
-                      {/* Premium Background Animation - Visible in card, obscured by inputs */}
                       <CardBackground />
                       
                       <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-500">
@@ -175,12 +177,12 @@ const Contact: React.FC = () => {
         <div className="max-w-3xl mx-auto">
             <ScrollReveal animation="fade-up">
               <h2 className="text-2xl font-bold text-white text-center mb-4 font-display uppercase tracking-tight">Frequently Asked Questions</h2>
-              <p className="text-center text-textMuted text-sm mb-10 font-medium">Common queries about my expertise.</p>
+              <p className="text-center text-textMuted text-sm mb-8 font-medium">Common queries about my expertise.</p>
             </ScrollReveal>
             
             <div className="space-y-4">
-                {FAQS.map((faq, idx) => (
-                    <ScrollReveal key={idx} animation="slide-left" delay={idx * 100} distance={30}>
+                {faqs.length > 0 ? faqs.map((faq, idx) => (
+                    <ScrollReveal key={faq.id} animation="slide-left" delay={idx * 100} distance={30}>
                       <SpotlightCard className="rounded-2xl bg-[#000000] border border-white/5 overflow-hidden group hover:border-white/10 transition-all">
                           <button 
                               onClick={() => toggleFaq(idx)}
@@ -198,7 +200,11 @@ const Contact: React.FC = () => {
                           </div>
                       </SpotlightCard>
                     </ScrollReveal>
-                ))}
+                )) : (
+                    <div className="text-center text-textMuted text-sm py-10">
+                        No FAQs available at the moment.
+                    </div>
+                )}
             </div>
         </div>
 

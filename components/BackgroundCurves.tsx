@@ -1,11 +1,22 @@
 
 import React, { useEffect, useRef } from 'react';
+import { useProfile } from '../context/ProfileContext';
 
 const BackgroundCurves: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { settings } = useProfile();
+  
+  // Default to fallback until settings load
+  const colorRef = useRef('#22d3ee');
+
+  // Immediately update color when settings change
+  useEffect(() => {
+    if (settings?.primary_color) {
+        colorRef.current = settings.primary_color;
+    }
+  }, [settings]);
 
   useEffect(() => {
-    // Only initialize on devices with a mouse/trackpad
     const isDesktop = window.matchMedia("(pointer: fine)").matches;
     if (!isDesktop) return;
 
@@ -17,22 +28,12 @@ const BackgroundCurves: React.FC = () => {
 
     let mouse = { x: 0, y: 0 };
     let head = { x: 0, y: 0 };
-    
-    // Trail state
     let trail: { x: number; y: number }[] = [];
-    const MAX_TRAIL_LENGTH = 18; // Slightly longer for more "weight"
-    
-    // Particle state
+    const MAX_TRAIL_LENGTH = 18; 
     let particles: { 
-      x: number; 
-      y: number; 
-      vx: number; 
-      vy: number; 
-      life: number; 
-      color: string;
-      size: number;
+      x: number; y: number; vx: number; vy: number; 
+      life: number; color: string; size: number;
     }[] = [];
-
     let isActive = false;
 
     const handleResize = () => {
@@ -60,20 +61,21 @@ const BackgroundCurves: React.FC = () => {
     window.addEventListener('mousemove', onMouseMove);
 
     let animationFrameId: number;
+
     const render = () => {
       if (!ctx) return;
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
+      // Always read latest color from ref
+      const primaryColor = colorRef.current;
+
       if (isActive) {
-        // Smoothing movement (increased speed for snappiness)
         head.x += (mouse.x - head.x) * 0.35;
         head.y += (mouse.y - head.y) * 0.35;
 
         trail.push({ x: head.x, y: head.y });
         if (trail.length > MAX_TRAIL_LENGTH) trail.shift();
 
-        // Spawn high-quality particles
-        const speed = Math.hypot(mouse.x - head.x, mouse.y - head.y);
         if (Math.random() > 0.3) {
           particles.push({
             x: head.x + (Math.random() - 0.5) * 8,
@@ -81,12 +83,11 @@ const BackgroundCurves: React.FC = () => {
             vx: (Math.random() - 0.5) * 4,
             vy: (Math.random() - 0.5) * 4,
             life: 1.0,
-            color: '#22d3ee', // Theme Cyan
+            color: primaryColor,
             size: Math.random() * 2.5 + 1.5
           });
         }
 
-        // Update Particles
         for (let i = particles.length - 1; i >= 0; i--) {
           const p = particles[i];
           p.x += p.vx; p.y += p.vy;
@@ -94,7 +95,6 @@ const BackgroundCurves: React.FC = () => {
           if (p.life <= 0) particles.splice(i, 1);
         }
 
-        // Draw Substantial Trail
         if (trail.length > 1) {
           ctx.beginPath();
           ctx.moveTo(trail[0].x, trail[0].y);
@@ -105,25 +105,24 @@ const BackgroundCurves: React.FC = () => {
           }
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          
-          // Thicker, more substantial stroke
           ctx.lineWidth = 6; 
           
           const grad = ctx.createLinearGradient(
             trail[0].x, trail[0].y, 
             trail[trail.length - 1].x, trail[trail.length - 1].y
           );
-          grad.addColorStop(0, 'rgba(34, 211, 238, 0)');
-          grad.addColorStop(1, 'rgba(34, 211, 238, 0.6)');
+          
+          // Ensure gradient matches primary color
+          grad.addColorStop(0, `${primaryColor}00`);
+          grad.addColorStop(1, `${primaryColor}99`);
           
           ctx.strokeStyle = grad;
           ctx.shadowBlur = 12;
-          ctx.shadowColor = '#22d3ee';
+          ctx.shadowColor = primaryColor;
           ctx.stroke();
           ctx.shadowBlur = 0;
         }
 
-        // Draw Sparks
         for (const p of particles) {
           ctx.globalAlpha = p.life;
           ctx.fillStyle = p.color;
@@ -133,23 +132,19 @@ const BackgroundCurves: React.FC = () => {
         }
         ctx.globalAlpha = 1;
 
-        // Draw Premium Cursor Head
         ctx.shadowBlur = 15;
-        ctx.shadowColor = '#22d3ee';
-        
-        // Inner white dot
+        ctx.shadowColor = primaryColor;
         ctx.fillStyle = '#FFFFFF';
         ctx.beginPath();
         ctx.arc(head.x, head.y, 4, 0, Math.PI * 2);
         ctx.fill();
         
-        // Outer cyan glow ring
-        ctx.strokeStyle = 'rgba(34, 211, 238, 0.5)';
+        // Convert primaryColor hex to rgba for outer ring
+        ctx.strokeStyle = primaryColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(head.x, head.y, 8, 0, Math.PI * 2);
         ctx.stroke();
-        
         ctx.shadowBlur = 0;
       }
 
@@ -162,7 +157,7 @@ const BackgroundCurves: React.FC = () => {
       window.removeEventListener('mousemove', onMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, []); 
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-[9998]" />;
 };

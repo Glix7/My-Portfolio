@@ -1,24 +1,37 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowUpRight, Check, ArrowRight, Layers, Trophy, Github, Globe, Share2, Twitter, Linkedin, Copy, Code } from 'lucide-react';
-import { PROJECTS } from '../constants';
+import { ArrowLeft, Check, ArrowRight, Layers, Trophy, Github, Globe, Share2, Linkedin, Copy, Code, Loader2 } from 'lucide-react';
+import { pb, getImageUrl } from '../lib/pocketbase';
 import { Project } from '../types';
 import ScrollReveal from '../components/ScrollReveal';
 import TiltCard from '../components/TiltCard';
 import SpotlightCard from '../components/SpotlightCard';
 import TextGenerateEffect from '../components/TextGenerateEffect';
+import { useProfile } from '../context/ProfileContext';
+import Meta from '../components/Meta'; // Import Meta
 
 const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { socials } = useProfile();
   const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const foundProject = PROJECTS.find(p => p.id === id);
-    if (foundProject) {
-      setProject(foundProject);
-    }
+    const fetchProject = async () => {
+      try {
+        if (!id) return;
+        const record = await pb.collection('projects').getOne<Project>(id);
+        setProject(record);
+      } catch (err) {
+        console.error("Error fetching project:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
   }, [id]);
 
   const handleCopy = async () => {
@@ -31,6 +44,14 @@ const ProjectDetail: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+        <div className="w-full min-h-screen flex items-center justify-center bg-black">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        </div>
+    );
+  }
+
   if (!project) {
     return (
         <div className="w-full min-h-[50vh] flex flex-col items-center justify-center pt-28">
@@ -40,13 +61,19 @@ const ProjectDetail: React.FC = () => {
     );
   }
 
-  const currentIndex = PROJECTS.findIndex(p => p.id === project.id);
-  const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
+  // Construct image URL for meta tag
+  const projectImageUrl = getImageUrl(project.collectionId, project.id, project.image);
 
   return (
-    <div className="w-full pt-32 pb-20 px-6">
+    <div className="w-full pt-28 pb-16 px-6">
+      {/* Dynamic SEO for this project */}
+      <Meta 
+        title={project.title}
+        description={project.description}
+        image={projectImageUrl}
+      />
+
       <div className="max-w-5xl mx-auto">
-        
         <div className="max-w-3xl mx-auto">
             <Link to="/works" className="inline-flex items-center gap-2 text-sm font-bold text-textMuted hover:text-white mb-8 transition-colors">
                 <ArrowLeft size={16} /> Back to Works
@@ -54,7 +81,7 @@ const ProjectDetail: React.FC = () => {
 
             {/* Header Section */}
             <ScrollReveal animation="fade-up">
-              <div className="mb-10">
+              <div className="mb-8">
                   <div className="flex gap-3 mb-4">
                       <span className="bg-primary/10 border border-primary/20 text-primary px-3 py-1 text-xs font-bold uppercase rounded-full">{project.category}</span>
                       <span className="bg-white/5 border border-white/10 text-textMuted px-3 py-1 text-xs font-bold uppercase rounded-full">{project.year}</span>
@@ -67,7 +94,9 @@ const ProjectDetail: React.FC = () => {
 
                       <div className="flex flex-wrap gap-4 shrink-0">
                           {project.liveUrl && (
-                              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 bg-black border border-cyan-400 text-cyan-400 shadow-[0_0_20px_-5px_rgba(34,211,238,0.5)] hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.7)] hover:-translate-y-1 transition-all duration-300">
+                              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" 
+                                 className="px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 bg-black border border-primary text-primary hover:bg-primary/10 hover:-translate-y-1 transition-all duration-300"
+                                 style={{ boxShadow: '0 0 20px -5px var(--primary)' }}>
                                   <Globe size={18} /> LIVE DEMO
                               </a>
                           )}
@@ -87,7 +116,7 @@ const ProjectDetail: React.FC = () => {
                        <span className="text-xs font-bold text-textMuted uppercase shrink-0">Tech Stack</span>
                        <div className="h-4 w-px bg-white/10 shrink-0"></div>
                        <div className="flex flex-nowrap gap-2">
-                           {project.techStack.map(tech => (
+                           {project.techStack && project.techStack.map(tech => (
                                <span key={tech} className="text-xs font-bold border border-white/10 px-3 py-1 bg-white/5 rounded-full text-textMuted hover:text-white transition-colors cursor-default whitespace-nowrap">{tech}</span>
                            ))}
                        </div>
@@ -95,18 +124,22 @@ const ProjectDetail: React.FC = () => {
               </div>
             </ScrollReveal>
 
-            {/* Main Image - Fixed to constraint width */}
+            {/* Main Image */}
             <ScrollReveal animation="blur-in" delay={200}>
               <TiltCard intensity={5}>
-                <div className="w-full aspect-video border border-white/10 rounded-2xl bg-surfaceHighlight mb-20 overflow-hidden relative group shadow-2xl shadow-black/50">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                <div className="w-full aspect-video border border-white/10 rounded-2xl bg-surfaceHighlight mb-12 overflow-hidden relative group shadow-2xl shadow-black/50">
+                    <img 
+                        src={projectImageUrl} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover" 
+                    />
                     <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl"></div>
                 </div>
               </TiltCard>
             </ScrollReveal>
 
             {/* Single Column Content Flow */}
-            <div className="space-y-24">
+            <div className="space-y-16">
                 
                 {/* Challenge Section */}
                 <ScrollReveal animation="slide-left" distance={40}>
@@ -132,7 +165,7 @@ const ProjectDetail: React.FC = () => {
                           {project.solution}
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {project.keyFeatures.map((item, idx) => (
+                          {project.keyFeatures && project.keyFeatures.map((item, idx) => (
                               <SpotlightCard key={idx} className="bg-[#0A0A0A] rounded-2xl border border-white/5">
                                 <div className="flex items-start gap-4 p-5">
                                     <div className="mt-1 w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 text-primary">
@@ -147,7 +180,7 @@ const ProjectDetail: React.FC = () => {
                 </ScrollReveal>
 
                 {/* System Architecture Section */}
-                {project.modules && (
+                {project.modules && project.modules.length > 0 && (
                     <ScrollReveal animation="fade-up">
                       <div>
                           <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 uppercase font-display flex items-center gap-3">
@@ -191,7 +224,7 @@ const ProjectDetail: React.FC = () => {
                 )}
 
                 {/* Footer Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white/10 pt-16 mt-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white/10 pt-10 mt-10">
                     <ScrollReveal animation="slide-left" delay={100}>
                       <SpotlightCard className="bg-[#0A0A0A] border border-white/5 p-8 rounded-3xl h-full">
                            <h3 className="text-sm font-bold text-textMuted uppercase mb-6 tracking-wider flex items-center gap-2">
@@ -203,7 +236,7 @@ const ProjectDetail: React.FC = () => {
                                   <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy Link'}</span>
                                   <span className="sm:hidden">{copied ? 'Copied' : ''}</span>
                               </button>
-                              <a href="https://leetcode.com/u/o9K2o96mc9/" target="_blank" rel="noopener noreferrer" className="p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-primary/20 hover:text-primary transition-all" title="LeetCode Profile">
+                              <a href={socials.leetcode} target="_blank" rel="noopener noreferrer" className="p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-primary/20 hover:text-primary transition-all" title="LeetCode Profile">
                                   <Code size={20} />
                               </a>
                               <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="p-4 bg-white/5 rounded-xl border border-white/5 hover:bg-[#0077b5] hover:text-white transition-all">
@@ -227,15 +260,6 @@ const ProjectDetail: React.FC = () => {
                     </ScrollReveal>
                 </div>
             </div>
-
-            <ScrollReveal animation="fade-up" delay={300}>
-              <div className="border-t border-white/10 mt-20 pt-12 flex justify-between items-center group">
-                  <span className="font-bold text-textMuted uppercase text-sm tracking-wider">Next Project</span>
-                  <Link to={`/works/${nextProject.id}`} className="text-2xl md:text-3xl font-bold uppercase text-white hover:text-primary transition-colors flex items-center gap-4 text-right leading-tight">
-                      {nextProject.title} <ArrowRight size={32} className="group-hover:translate-x-2 transition-transform shrink-0" />
-                  </Link>
-              </div>
-            </ScrollReveal>
         </div>
       </div>
     </div>

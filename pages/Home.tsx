@@ -1,39 +1,108 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, Terminal, Hexagon, FileJson, Code, Cpu, Globe, Zap, Database, Sparkles, Layout, Star, Award, Layers, FolderGit2 } from 'lucide-react';
-import { PROJECTS, SKILLS } from '../constants';
+import { ArrowRight, ArrowUpRight, Terminal, Hexagon, Code, Cpu, Globe, Zap, Database, Sparkles, Layout, Loader2 } from 'lucide-react';
 import CountUp from '../components/CountUp';
 import Marquee from '../components/Marquee';
 import CardBackground from '../components/CardBackground';
 import ScrollReveal from '../components/ScrollReveal';
 import TiltCard from '../components/TiltCard';
 import SpotlightCard from '../components/SpotlightCard';
-
-// Custom Stats Data to match the premium bar layout
-const PREMIUM_STATS = [
-    { label: 'CGPA', value: '8.3', icon: <Star size={22} className="text-yellow-400" /> },
-    { label: 'Live Projects', value: '3+', icon: <FolderGit2 size={22} className="text-cyan-400" /> },
-    { label: 'Certifications', value: '4', icon: <Award size={22} className="text-purple-400" /> },
-    { label: 'Tech Stack', value: '15+', icon: <Layers size={22} className="text-blue-400" /> },
-];
-
-const HEADLINES = [
-  { line1: "Building The Future Of", line2: "Intelligent Applications" },
-  { line1: "Turning AI Ideas Into", line2: "Scalable Products" },
-  { line1: "Transforming Data Into", line2: "Clear Insights" }
-];
+import { pb, getImageUrl } from '../lib/pocketbase';
+import { Project, Skill, AnimatedTagline, Keyword, NumberedShowcase } from '../types';
+import { useProfile } from '../context/ProfileContext';
+import { getIcon } from '../lib/icons';
 
 const Home: React.FC = () => {
+  const { profile } = useProfile();
+  
+  const [taglines, setTaglines] = useState<AnimatedTagline[]>([]);
+  const [keywords, setKeywords] = useState<Keyword[]>([]);
+  const [showcaseStats, setShowcaseStats] = useState<NumberedShowcase[]>([]);
+  
   const [index, setIndex] = useState(0);
+  const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+  const [topSkills, setTopSkills] = useState<Skill[]>([]);
+
+  useEffect(() => {
+    // 1. Fetch Dynamic Home Content
+    const fetchHomeContent = async () => {
+        try {
+            // Taglines: Sort by creation date (Oldest first: +created)
+            // Updated collection name from 'animated_taglines' to 'taglines'
+            const taglinesReq = await pb.collection('taglines').getList<AnimatedTagline>(1, 5, { 
+                sort: '+created' 
+            });
+            if (taglinesReq.items.length > 0) setTaglines(taglinesReq.items);
+
+            // Keywords: Sort by Newest first (-created)
+            const keywordsReq = await pb.collection('keywords').getList<Keyword>(1, 50, { sort: '-created' });
+            if (keywordsReq.items.length > 0) setKeywords(keywordsReq.items);
+
+            // Numbered Showcase: Sort by Oldest first (+created)
+            // Updated collection name from 'numbered_showcase' to 'showcase'
+            const statsReq = await pb.collection('showcase').getList<NumberedShowcase>(1, 4, { sort: '+created' });
+            if (statsReq.items.length > 0) setShowcaseStats(statsReq.items);
+
+        } catch (err) {
+            console.error("Error fetching home content - utilizing fallbacks.", err);
+        }
+    };
+
+    // 2. Fetch Projects: Latest 2 based on created time
+    const fetchFeatured = async () => {
+      try {
+        const records = await pb.collection('projects').getList<Project>(1, 2, {
+          sort: '-created',
+        });
+        setFeaturedProjects(records.items);
+      } catch (err) {
+        console.error("Failed to load featured projects", err);
+      }
+    };
+
+    // 3. Fetch Skills: Latest featured skills
+    const fetchSkills = async () => {
+        try {
+            const records = await pb.collection('skills').getList<Skill>(1, 3, {
+                filter: 'isFeatured = true',
+                sort: '-created'
+            });
+            setTopSkills(records.items);
+        } catch (err) {
+            console.error("Failed to load skills", err);
+        }
+    }
+
+    fetchHomeContent();
+    fetchFeatured();
+    fetchSkills();
+  }, []);
+
+  // Default / Fallback Data Configuration
+  const DISPLAY_TAGLINES = taglines.length > 0 ? taglines : [
+    { line1: "Tagline Line 1", line2: "Tagline Line 2", id: "1" } as AnimatedTagline,
+    { line1: "Another Heading", line2: "Sub Heading", id: "2" } as AnimatedTagline,
+    { line1: "Creative", line2: "Portfolio", id: "3" } as AnimatedTagline
+  ];
+
+  const DISPLAY_KEYWORDS = keywords.length > 0 ? keywords.map(k => k.text) : 
+    ['Keyword 1', 'Keyword 2', 'Keyword 3', 'Keyword 4', 'Keyword 5', 'Keyword 6', 'Keyword 7', 'Keyword 8'];
+
+  const DISPLAY_STATS = showcaseStats.length > 0 ? showcaseStats : [
+      { id: '1', label: 'Stat Label', value: '100', icon: 'star' } as NumberedShowcase,
+      { id: '2', label: 'Metric', value: '50+', icon: 'folder-git-2' } as NumberedShowcase,
+      { id: '3', label: 'Achieved', value: '10', icon: 'award' } as NumberedShowcase,
+      { id: '4', label: 'Items', value: '20+', icon: 'layers' } as NumberedShowcase
+  ];
 
   // Rotate Headlines
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % HEADLINES.length);
-    }, 3000);
+      setIndex((prev) => (prev + 1) % DISPLAY_TAGLINES.length);
+    }, 3500); // Slightly slower for better readability
     return () => clearInterval(interval);
-  }, []);
+  }, [DISPLAY_TAGLINES.length]);
 
   // Parallax Logic
   useEffect(() => {
@@ -41,9 +110,7 @@ const Home: React.FC = () => {
        const scrolled = window.scrollY;
        const parallaxElements = document.querySelectorAll('.parallax-icon');
        parallaxElements.forEach((el) => {
-           // Extract speed from data attribute
            const speed = parseFloat((el as HTMLElement).dataset.speed || '0.1');
-           // Apply translation. We start at 0 and move up/down based on scroll
            (el as HTMLElement).style.transform = `translateY(${scrolled * speed}px)`;
        });
     };
@@ -68,8 +135,8 @@ const Home: React.FC = () => {
   return (
     <div className="w-full">
       
-      {/* Hero Section - RESTORED APPLE STYLE */}
-      <section className="relative pt-32 pb-10 px-6 min-h-[85vh] flex flex-col justify-center items-center text-center overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative pt-28 pb-16 px-6 min-h-[85vh] flex flex-col justify-center items-center text-center overflow-hidden">
         
         {/* Floating Decoration Icons */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -100,7 +167,7 @@ const Home: React.FC = () => {
 
         {/* Welcome Badge */}
         <ScrollReveal animation="blur-in" duration={1000}>
-          <div className="relative z-10 inline-flex mb-10 group">
+          <div className="relative z-10 inline-flex mb-8 group">
             <div className="
               relative flex items-center gap-3 pl-4 pr-6 py-2 rounded-full overflow-hidden
               border border-white/20 bg-white/5
@@ -117,41 +184,53 @@ const Home: React.FC = () => {
                 <span className="relative z-10 text-xl animate-hand-wave origin-[70%_70%] select-none">👋</span>
                 
                 <span className="relative z-10 text-sm md:text-base font-bold text-white tracking-wide">
-                   Harishama Welcome’s You!
+                   {profile ? profile.firstName : 'User'} Welcome’s You!
                 </span>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Headline - Animated Zoom Effect */}
+        {/* Headline - Grid Layout to prevent overlaps */}
         <ScrollReveal animation="fade-up" delay={100} distance={40}>
-          <div className="relative z-10 w-full max-w-5xl mx-auto mb-6 grid place-items-center">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none col-start-1 row-start-1"></div>
+          <div className="relative z-10 w-full max-w-6xl mx-auto mb-8 grid grid-cols-1 place-items-center">
              
-             {HEADLINES.map((headline, i) => (
-                 <h1 
-                    key={i}
-                    className={`col-start-1 row-start-1 text-center transition-all duration-1000 ease-[cubic-bezier(0.2,1,0.2,1)] ${
+             {/* Glow Background */}
+             <div className="col-start-1 row-start-1 w-[120%] h-[120%] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+             
+             {DISPLAY_TAGLINES.map((tagline, i) => (
+                 <div 
+                    key={tagline.id}
+                    className={`col-start-1 row-start-1 flex flex-col items-center justify-center text-center transition-all duration-1000 ease-[cubic-bezier(0.2,1,0.2,1)] ${
                         i === index 
-                        ? "opacity-100 scale-100 blur-0 z-10" 
-                        : "opacity-0 scale-110 blur-sm z-0 pointer-events-none"
+                        ? "opacity-100 scale-100 blur-0 z-10 translate-y-0" 
+                        : "opacity-0 scale-110 blur-md z-0 pointer-events-none translate-y-4 absolute"
                     }`}
                  >
-                    <span className="block text-white text-3xl sm:text-5xl md:text-7xl font-bold font-display tracking-tight leading-tight mb-2 sm:mb-4">
-                        {headline.line1}
-                    </span>
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-200 to-primary text-3xl sm:text-5xl md:text-7xl font-bold font-display tracking-tight leading-tight">
-                        {headline.line2}
-                    </span>
-                 </h1>
+                    <h1 className="flex flex-col gap-2 sm:gap-4">
+                        <span className="text-white text-3xl sm:text-5xl md:text-7xl font-bold font-display tracking-tight leading-[1.1] drop-shadow-xl">
+                            {tagline.line1}
+                        </span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary text-3xl sm:text-5xl md:text-7xl font-bold font-display tracking-tight leading-[1.1] drop-shadow-xl">
+                            {tagline.line2}
+                        </span>
+                    </h1>
+                 </div>
              ))}
+             
+             {/* Spacer to reserve height for the grid if JS fails or loading */}
+             <div className="col-start-1 row-start-1 invisible pointer-events-none" aria-hidden="true">
+                <h1 className="flex flex-col gap-2 sm:gap-4">
+                    <span className="text-3xl sm:text-5xl md:text-7xl font-bold font-display leading-[1.1]">Placeholder</span>
+                    <span className="text-3xl sm:text-5xl md:text-7xl font-bold font-display leading-[1.1]">Placeholder</span>
+                </h1>
+             </div>
           </div>
         </ScrollReveal>
 
-        {/* Subtitle - Static */}
+        {/* Subtitle - USING PROFILE TAGLINE */}
         <ScrollReveal animation="fade-up" delay={200} distance={40}>
-           <p className="relative z-10 text-textMuted text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-              I bridge the gap between complex AI models and intuitive user interfaces. Specializing in Python, React, and Generative AI.
+           <p className="relative z-10 text-textMuted text-lg max-w-xl mx-auto mb-10 leading-relaxed font-medium">
+              {profile?.tagline || "Your professional tagline goes here."}
            </p>
         </ScrollReveal>
 
@@ -169,12 +248,12 @@ const Home: React.FC = () => {
       </section>
 
       {/* Marquee & Stats Section */}
-      <section className="px-4 md:px-6 relative z-10 pb-10 -mt-10">
+      <section className="px-4 md:px-6 relative z-10 pb-8 -mt-8">
         <div className="max-w-6xl mx-auto space-y-8">
             
             {/* Infinite Keywords Marquee */}
             <ScrollReveal animation="fade-in" duration={1200}>
-              <div className="relative w-full max-w-4xl mx-auto overflow-hidden border border-white/20 rounded-full bg-[#050505] shadow-[0_0_20px_rgba(0,0,0,0.5)] group h-12 flex items-center">
+              <div className="relative w-full max-w-4xl mx-auto overflow-hidden border border-white/20 rounded-full bg-[#050505] shadow-[0_0_20px_rgba(0,0,0,0.5)] group h-14 flex items-center">
                    
                    {/* Animated Border Beam */}
                    <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
@@ -184,14 +263,14 @@ const Home: React.FC = () => {
                    {/* Background Glow */}
                    <div className="absolute inset-0 bg-gradient-to-r from-black via-white/5 to-black opacity-50"></div>
                    
-                   {/* Side Fades for Smooth Infinite Look */}
+                   {/* Side Fades */}
                    <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-[#050505] to-transparent z-10 rounded-l-full"></div>
                    <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#050505] to-transparent z-10 rounded-r-full"></div>
                    
                    {/* Marquee Content */}
                    <div className="relative z-10 w-full flex items-center">
                        <Marquee 
-                          items={['Java', 'Python', 'JavaScript', 'React.js', 'Next.js', 'Redis', 'Gemini API', 'FastAPI', 'MongoDB', 'Tailwind CSS', 'OpenAI API', 'ML Workflows', 'Prompt Engineering', 'Data Science', 'TypeScript']} 
+                          items={DISPLAY_KEYWORDS} 
                           direction="left" 
                           variant="transparent"
                        />
@@ -199,41 +278,39 @@ const Home: React.FC = () => {
               </div>
             </ScrollReveal>
 
-            {/* Premium Stats Bar - Reference Image Style */}
+            {/* Premium Stats Bar */}
             <ScrollReveal animation="fade-up" delay={200} distance={30}>
                 <div className="max-w-5xl mx-auto px-2">
-                    {/* The Bar */}
                     <div className="bg-[#030303] border border-white/10 rounded-[2.5rem] p-2 shadow-2xl relative">
-                        {/* Inner Content */}
-                        <div className="bg-[#080808] rounded-[2rem] border border-white/5 px-6 py-6 md:px-10 md:py-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 relative z-10">
+                        <div className="bg-[#080808] rounded-[2rem] border border-white/5 px-6 py-6 md:px-10 md:py-8 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0 relative z-10">
                              
-                             {PREMIUM_STATS.map((stat, idx) => (
-                                <React.Fragment key={idx}>
-                                    <div className="flex items-center gap-5 w-full md:w-auto justify-center md:justify-start">
+                             {DISPLAY_STATS.map((stat, idx) => (
+                                <React.Fragment key={stat.id}>
+                                    <div className="flex items-center gap-5 w-full md:w-auto justify-center md:justify-start group">
                                         {/* Icon Box */}
-                                        <div className="w-14 h-14 rounded-2xl bg-[#121212] border border-white/10 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
-                                            {stat.icon}
+                                        <div className="w-14 h-14 rounded-2xl bg-[#121212] border border-white/10 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] text-white group-hover:scale-110 transition-transform duration-300">
+                                            {getIcon(stat.icon, { size: 22, className: "text-white/70 group-hover:text-white transition-colors" })}
                                         </div>
                                         
                                         <div className="flex flex-col text-left">
-                                            <span className="text-3xl font-bold text-white font-display leading-none mb-1">
+                                            <span className="text-3xl font-bold text-white font-display leading-none mb-1.5">
                                                 <CountUp 
                                                     end={parseFloat(stat.value)} 
                                                     suffix={stat.value.includes('+') ? '+' : ''} 
                                                     decimals={stat.value.includes('.') ? 1 : 0}
                                                 />
                                             </span>
-                                            <span className="text-[10px] font-bold text-textMuted uppercase tracking-widest">
+                                            <span className="text-[10px] font-bold text-textMuted uppercase tracking-widest group-hover:text-white transition-colors">
                                                 {stat.label}
                                             </span>
                                         </div>
                                     </div>
 
                                     {/* Divider */}
-                                    {idx < PREMIUM_STATS.length - 1 && (
-                                        <div className="hidden md:block w-px h-10 bg-white/10"></div>
+                                    {idx < DISPLAY_STATS.length - 1 && (
+                                        <div className="hidden md:block w-px h-12 bg-white/10"></div>
                                     )}
-                                    {idx < PREMIUM_STATS.length - 1 && (
+                                    {idx < DISPLAY_STATS.length - 1 && (
                                         <div className="md:hidden w-full max-w-[120px] h-px bg-white/10"></div>
                                     )}
                                 </React.Fragment>
@@ -247,10 +324,10 @@ const Home: React.FC = () => {
       </section>
 
       {/* Top Skills Section */}
-      <section className="pt-12 pb-24 px-6 relative z-10">
+      <section className="pt-12 pb-16 px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
              <ScrollReveal animation="slide-left" distance={60}>
-               <div className="flex justify-between items-end mb-12">
+               <div className="flex justify-between items-end mb-8">
                    <div>
                        <h2 className="text-3xl md:text-4xl font-bold text-white font-display mb-2">Top Skills</h2>
                        <p className="text-textMuted">Core technologies I use to build scalable solutions.</p>
@@ -261,32 +338,47 @@ const Home: React.FC = () => {
                </div>
              </ScrollReveal>
 
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 {SKILLS.slice(0, 3).map((skill, idx) => (
-                     <ScrollReveal key={idx} animation="fade-up" delay={idx * 150} distance={40}>
-                       <SpotlightCard className="h-full border border-white/20 shadow-[0_0_15px_-5px_rgba(255,255,255,0.1)]">
-                           <div className="relative group flex flex-col items-center text-center p-8 h-full bg-transparent">
-                               <CardBackground />
-                               
-                               <div className="relative z-10 mb-6 p-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 text-white transition-all duration-300 shadow-[0_8px_16px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] group-hover:-translate-y-2 backdrop-blur-md">
-                                   {React.cloneElement(skill.icon as React.ReactElement<any>, { size: 32 })}
-                               </div>
+             {topSkills.length > 0 ? (
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     {topSkills.map((skill, idx) => (
+                         <ScrollReveal key={idx} animation="fade-up" delay={idx * 150} distance={40}>
+                           <SpotlightCard className="h-full border border-white/20 shadow-[0_0_15px_-5px_rgba(255,255,255,0.1)]">
+                               <div className="relative group flex flex-col items-center text-center p-8 h-full bg-transparent">
+                                   <CardBackground />
+                                   
+                                   <div className="relative z-10 mb-6 p-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 text-white transition-all duration-300 shadow-[0_8px_16px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] group-hover:-translate-y-2 backdrop-blur-md">
+                                       {getIcon(skill.icon, { size: 32 })}
+                                   </div>
 
-                               <h3 className="text-2xl font-bold text-white mb-3 font-display tracking-tight relative z-10">{skill.title}</h3>
-                               <p className="text-textMuted text-sm leading-relaxed mb-10 max-w-[85%] mx-auto relative z-10 drop-shadow-sm">
-                                   {skill.desc}
-                                </p>
+                                   <h3 className="text-2xl font-bold text-white mb-3 font-display tracking-tight relative z-10">{skill.title}</h3>
+                                   <p className="text-textMuted text-sm leading-relaxed mb-10 max-w-[85%] mx-auto relative z-10 drop-shadow-sm">
+                                       {skill.desc}
+                                    </p>
 
-                                <div className="w-full mt-auto relative z-10">
-                                   <Link to="/skills" className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#000000] border border-white/20 text-sm font-bold text-white transition-all duration-300 hover:bg-white hover:text-black z-20 hover:border-white shadow-sm">
-                                       Explore Tech <ArrowRight size={14} />
-                                   </Link>
+                                    <div className="w-full mt-auto relative z-10">
+                                       <Link to="/skills" className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#000000] border border-white/20 text-sm font-bold text-white transition-all duration-300 hover:bg-white hover:text-black z-20 hover:border-white shadow-sm">
+                                           Explore Tech <ArrowRight size={14} />
+                                       </Link>
+                                   </div>
                                </div>
-                           </div>
-                       </SpotlightCard>
-                     </ScrollReveal>
-                 ))}
-             </div>
+                           </SpotlightCard>
+                         </ScrollReveal>
+                     ))}
+                 </div>
+             ) : (
+                <TiltCard className="w-full">
+                    <div className="w-full py-20 rounded-3xl border border-white/10 bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] group">
+                        <CardBackground />
+                        <div className="relative z-10 flex flex-col items-center gap-4">
+                            <div className="relative">
+                                 <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                                 <Loader2 className="animate-spin text-primary relative z-10" size={28} />
+                            </div>
+                            <p className="text-textMuted font-bold uppercase tracking-widest text-sm animate-pulse">Loading Top Skills...</p>
+                        </div>
+                    </div>
+                </TiltCard>
+             )}
              
              <div className="mt-8 md:hidden flex justify-center">
                  <Link to="/skills" className="text-white font-bold text-sm underline underline-offset-4">View All Skills</Link>
@@ -295,10 +387,10 @@ const Home: React.FC = () => {
       </section>
 
       {/* Featured Projects */}
-      <section className="py-24 px-6 bg-surfaceHighlight/30 border-t border-white/5 relative z-10">
+      <section className="py-16 px-6 bg-surfaceHighlight/30 border-t border-white/5 relative z-10">
           <div className="max-w-6xl mx-auto">
              <ScrollReveal animation="slide-right" distance={60}>
-               <div className="flex justify-between items-end mb-16">
+               <div className="flex justify-between items-end mb-10">
                    <div>
                        <div className="text-white font-bold text-xs uppercase tracking-wider mb-2 opacity-70">Portfolio</div>
                        <h2 className="text-3xl md:text-5xl font-bold text-white font-display">Featured Projects</h2>
@@ -310,7 +402,7 @@ const Home: React.FC = () => {
              </ScrollReveal>
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 {PROJECTS.slice(0, 2).map((project, idx) => (
+                 {featuredProjects.map((project, idx) => (
                      <ScrollReveal key={project.id} animation="blur-in" delay={idx * 200}>
                        <TiltCard className="h-full">
                            <div className="group relative rounded-3xl bg-[#000000] border border-white/20 overflow-hidden hover:border-white/40 transition-all duration-500 flex flex-col h-full shadow-[0_0_20px_-10px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_-10px_rgba(255,255,255,0.15)]">
@@ -318,7 +410,11 @@ const Home: React.FC = () => {
                                
                                <div className="relative h-64 w-full overflow-hidden z-10 border-b border-white/10 group-hover:border-white/20 transition-colors">
                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
-                                   <img src={project.image} alt={project.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                                   <img 
+                                        src={getImageUrl(project.collectionId, project.id, project.image)}
+                                        alt={project.title} 
+                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" 
+                                   />
                                    
                                    <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10 z-20 shadow-lg group-hover:border-white/50 transition-colors">
                                       {project.category}
@@ -331,7 +427,7 @@ const Home: React.FC = () => {
                                    
                                    <div className="mt-auto flex justify-between items-center pt-4 border-t border-white/10 group-hover:border-white/20 transition-colors">
                                       <div className="flex gap-2">
-                                          {project.techStack.slice(0, 3).map(tag => (
+                                          {project.techStack && project.techStack.slice(0, 3).map(tag => (
                                               <span key={tag} className="text-[10px] font-bold uppercase tracking-wider text-textMuted bg-white/5 px-2 py-1 rounded border border-white/10 group-hover:border-white/20 transition-colors">{tag}</span>
                                           ))}
                                       </div>
@@ -344,6 +440,22 @@ const Home: React.FC = () => {
                        </TiltCard>
                      </ScrollReveal>
                  ))}
+                 {featuredProjects.length === 0 && (
+                    <div className="col-span-1 md:col-span-2">
+                         <TiltCard className="w-full">
+                            <div className="w-full py-20 rounded-3xl border border-white/10 bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] group">
+                                <CardBackground />
+                                <div className="relative z-10 flex flex-col items-center gap-4">
+                                    <div className="relative">
+                                         <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                                         <Loader2 className="animate-spin text-primary relative z-10" size={28} />
+                                    </div>
+                                    <p className="text-textMuted font-bold uppercase tracking-widest text-sm animate-pulse">Loading Projects...</p>
+                                </div>
+                            </div>
+                        </TiltCard>
+                    </div>
+                 )}
              </div>
           </div>
       </section>

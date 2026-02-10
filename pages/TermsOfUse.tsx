@@ -1,71 +1,78 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { pb } from '../lib/pocketbase';
+import { LegalDoc } from '../types';
+import { Loader2 } from 'lucide-react';
 
 const TermsOfUse: React.FC = () => {
+  const [doc, setDoc] = useState<LegalDoc | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDoc = async () => {
+      try {
+        // Fetch by slug "terms-of-use" from 'legals' collection
+        const record = await pb.collection('legals').getFirstListItem<LegalDoc>('slug="terms-of-use"');
+        setDoc(record);
+      } catch (error) {
+        console.error("Error fetching terms of use:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoc();
+  }, []);
+
+  if (loading) {
+    return (
+        <div className="w-full min-h-screen flex items-center justify-center bg-black pt-20">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+    );
+  }
+
+  // Fallback content if DB record is missing
+  const content = doc?.content || `
+    <p>Terms of Use content not found. Please create a record in the database with slug 'terms-of-use'.</p>
+    <ul>
+        <li>Collection: legals</li>
+        <li>Slug: terms-of-use</li>
+        <li>Title: Terms of Use</li>
+        <li>Content: [Your Rich Text Here]</li>
+    </ul>
+  `;
+
+  const lastUpdated = doc?.last_updated || "October 2024";
+
   return (
-    <div className="w-full pt-32 pb-20 px-6">
+    <div className="w-full pt-28 pb-12 px-6">
       <div className="max-w-4xl mx-auto relative rounded-3xl bg-[#050505] border border-white/10 p-8 md:p-12 overflow-hidden shadow-2xl">
 
         <div className="relative z-10">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-8 font-display uppercase border-b border-white/10 pb-6 tracking-tight">Terms of Use</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-8 font-display uppercase border-b border-white/10 pb-6 tracking-tight">
+                {doc?.title || "Terms of Use"}
+            </h1>
             
-            <div className="prose prose-invert prose-lg max-w-none text-textMuted">
-              <p className="mb-6 text-white/90 font-medium">
-                Last updated: October 2024
-              </p>
-              <p className="mb-6 leading-relaxed">
-                By accessing this portfolio website, you agree to be bound by these Terms of Use.
+            <div className="prose prose-invert prose-lg max-w-none text-textMuted leading-relaxed">
+              <p className="mb-8 text-white/90 font-medium">
+                Last updated: {lastUpdated}
               </p>
 
-              <h2 className="text-2xl font-bold text-white uppercase mb-4 mt-10 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-primary rounded-full"></span>
-                  1. Intellectual Property
-              </h2>
-              <p className="mb-4">
-                All content published on this website (including text, graphics, logos, project descriptions, and code snippets) is the property of Harishama Chaurasia unless otherwise noted. You may not reproduce, distribute, or create derivative works from this content without explicit permission.
-              </p>
+               {/* Rich Text Content from PocketBase */}
+               <div dangerouslySetInnerHTML={{ __html: content }} />
 
-              <h2 className="text-2xl font-bold text-white uppercase mb-4 mt-10 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-secondary rounded-full"></span>
-                  2. Usage License
-              </h2>
-              <p className="mb-4">
-                Permission is granted to temporarily download one copy of the materials (such as the Resume/CV) for personal, non-commercial transitory viewing only.
-              </p>
-
-              <h2 className="text-2xl font-bold text-white uppercase mb-4 mt-10 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-accent rounded-full"></span>
-                  3. Disclaimer
-              </h2>
-              <p className="mb-4 bg-white/5 p-4 rounded-xl border border-white/5">
-                The materials on this website are provided on an 'as is' basis. I make no warranties, expressed or implied, regarding the accuracy or reliability of the use of the materials on this website.
-              </p>
-
-              <h2 className="text-2xl font-bold text-white uppercase mb-4 mt-10 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-purple-500 rounded-full"></span>
-                  4. Links
-              </h2>
-              <p className="mb-4">
-                This website includes links to external sites (e.g., GitHub, LinkedIn). I am not responsible for the contents or privacy practices of any such linked site. The inclusion of any link does not imply endorsement.
-              </p>
-
-              <h2 className="text-2xl font-bold text-white uppercase mb-4 mt-10 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-pink-500 rounded-full"></span>
-                  5. Modifications
-              </h2>
-              <p className="mb-4">
-                I may revise these terms of service for this website at any time without notice. By using this website you are agreeing to be bound by the then current version of these terms of service.
-              </p>
-
-              <h2 className="text-2xl font-bold text-white uppercase mb-4 mt-10">Contact</h2>
-              <p>
-                For any questions regarding these terms, please contact:
-              </p>
-              <div className="mt-4 inline-block">
-                 <a href="mailto:harishamachaurasia@gmail.com" className="text-white font-bold hover:text-primary transition-colors border-b border-white/20 hover:border-primary pb-1">
-                    harishamachaurasia@gmail.com
-                 </a>
-              </div>
+               {!doc && (
+                  <div className="mt-8 p-4 border border-yellow-500/30 bg-yellow-500/10 rounded-lg text-yellow-200 text-sm font-sans not-prose">
+                      <p className="font-bold mb-2">⚠ Developer Note</p>
+                      <p>No record found in database with slug 'terms-of-use'. To make this dynamic:</p>
+                      <ol className="list-decimal ml-4 mt-2 space-y-1">
+                          <li>Create collection <code>legals</code>.</li>
+                          <li>Add a record with <code>slug="terms-of-use"</code>.</li>
+                          <li>Paste your HTML/Rich text into the content field.</li>
+                      </ol>
+                  </div>
+              )}
             </div>
         </div>
       </div>

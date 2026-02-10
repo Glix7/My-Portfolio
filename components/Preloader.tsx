@@ -1,11 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
+import { useProfile } from '../context/ProfileContext';
 
 const Preloader: React.FC = () => {
+  const { profile } = useProfile();
   const [percent, setPercent] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [hide, setHide] = useState(false);
   const [statusText, setStatusText] = useState('Initializing Core...');
+
+  // Use dynamic name or fallback
+  const displayName = profile?.firstName || "LOADING";
 
   useEffect(() => {
     // Disable scrolling while preloader is active
@@ -63,7 +68,7 @@ const Preloader: React.FC = () => {
         <div className="relative w-64 md:w-80">
             <div className="flex justify-between items-end mb-5">
                 <span className="text-white font-display font-bold text-xl tracking-widest uppercase">
-                    Harishama<span className="text-primary animate-pulse">.</span>
+                    {displayName}<span className="text-primary animate-pulse">.</span>
                 </span>
                 <span className="font-mono text-primary font-bold text-lg">
                     {percent}%
@@ -72,8 +77,11 @@ const Preloader: React.FC = () => {
 
             <div className="w-full h-[1px] bg-white/5 rounded-full overflow-hidden relative">
                 <div 
-                    className="absolute top-0 left-0 h-full bg-primary shadow-[0_0_15px_rgba(34,211,238,1)] transition-all duration-300 ease-out"
-                    style={{ width: `${percent}%` }}
+                    className="absolute top-0 left-0 h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ 
+                        width: `${percent}%`,
+                        boxShadow: '0 0 15px var(--primary)' 
+                    }}
                 />
             </div>
 

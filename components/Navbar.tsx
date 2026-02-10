@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { NAVIGATION_LINKS } from '../constants';
+import { useProfile } from '../context/ProfileContext';
 
 const Navbar: React.FC = () => {
+  const { branding } = useProfile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
@@ -35,7 +37,7 @@ const Navbar: React.FC = () => {
             {/* Logo - Animated & Disabled Link */}
             <div className="text-xl font-bold tracking-tight font-display transition-colors group flex items-center gap-0.5 mr-auto md:mr-8 cursor-default select-none">
               <div className="flex text-white">
-                {"Harishama".split("").map((char, idx) => (
+                {branding.logo.split("").map((char, idx) => (
                   <span 
                     key={idx} 
                     className="inline-block animate-pop-loop" 
@@ -77,7 +79,7 @@ const Navbar: React.FC = () => {
                 
                 <button 
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="md:hidden p-2 text-white hover:bg-white/20 rounded-full transition-colors"
+                    className="md:hidden p-2 text-white/70 hover:text-white hover:bg-white/20 rounded-full transition-colors"
                 >
                     {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>

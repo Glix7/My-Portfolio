@@ -2,28 +2,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin, Github, Heart, Code } from 'lucide-react';
+import { useProfile } from '../context/ProfileContext';
 
 const Footer: React.FC = () => {
+  const { branding, socials, profile } = useProfile();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-[#050505] border-t border-white/10 pt-10 pb-10 mt-12 relative z-50">
+    <footer className="w-full bg-[#050505] border-t border-white/10 pt-12 pb-8 relative z-50">
       <div className="max-w-7xl mx-auto px-6">
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-2">
-            <h2 className="text-2xl font-bold text-white mb-4 tracking-tight font-display">Harishama.</h2>
+            <h2 className="text-2xl font-bold text-white mb-4 tracking-tight font-display">{branding.logo}.</h2>
+            {/* USING PROFILE TAGLINE FOR DESCRIPTION */}
             <p className="text-textMuted text-sm mb-6 leading-relaxed max-w-sm">
-              Building intelligent solutions at the intersection of AI and Full Stack Development.
+              {profile?.tagline || "Your professional tagline goes here."}
             </p>
             <div className="flex gap-4">
-              <a href="https://github.com/Conqueror29-arch" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 text-textMuted hover:bg-white hover:text-black transition-all border border-white/5">
+              <a href={socials.github} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 text-textMuted hover:bg-white hover:text-black transition-all border border-white/5">
                 <Github size={18} />
               </a>
-              <a href="https://leetcode.com/u/o9K2o96mc9/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 text-textMuted hover:bg-white hover:text-black transition-all border border-white/5" title="LeetCode">
+              <a href={socials.leetcode} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 text-textMuted hover:bg-white hover:text-black transition-all border border-white/5" title="LeetCode">
                 <Code size={18} />
               </a>
-              <a href="https://www.linkedin.com/in/harishama-chaurasia-b4694735b/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 text-textMuted hover:bg-white hover:text-black transition-all border border-white/5">
+              <a href={socials.linkedin} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-white/5 text-textMuted hover:bg-white hover:text-black transition-all border border-white/5">
                 <Linkedin size={18} />
               </a>
             </div>
@@ -61,25 +64,35 @@ const Footer: React.FC = () => {
                0%, 100% { width: 0%; opacity: 0; }
                50% { width: 50%; opacity: 1; }
              }
+             
+             .collider-line {
+               background: linear-gradient(to right, transparent, var(--primary), white);
+               box-shadow: 0 0 15px var(--primary);
+             }
+             .collider-line-right {
+               background: linear-gradient(to left, transparent, var(--primary), white);
+               box-shadow: 0 0 15px var(--primary);
+             }
            `}</style>
            
            {/* Static Faint Base Line */}
            <div className="absolute inset-0 bg-white/5"></div>
 
-           {/* Left Beam (Cyan) */}
-           <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-transparent via-cyan-500/80 to-white shadow-[0_0_15px_#22d3ee]"
+           {/* Left Beam */}
+           <div className="absolute top-0 left-0 h-full collider-line opacity-80"
                 style={{ animation: 'collisionLeft 4s ease-in-out infinite' }}></div>
 
-           {/* Right Beam (Cyan) */}
-           <div className="absolute top-0 right-0 h-full bg-gradient-to-l from-transparent via-cyan-500/80 to-white shadow-[0_0_15px_#22d3ee]"
+           {/* Right Beam */}
+           <div className="absolute top-0 right-0 h-full collider-line-right opacity-80"
                 style={{ animation: 'collisionRight 4s ease-in-out infinite' }}></div>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-white text-base font-bold tracking-wide">© 2026 Tegota. All rights reserved.</p>
-          <div className="flex items-center gap-2 text-white text-base font-bold tracking-wide">
-            <span>Designed & Built by Harishama</span>
-            <Heart className="w-5 h-5 text-cyan-400 fill-cyan-400 animate-pulse" />
+          <p className="text-white text-sm font-bold tracking-wide">© {currentYear} {branding.logo}. All rights reserved.</p>
+          <div className="flex items-center gap-2 text-white text-sm font-bold tracking-wide">
+            {/* USING PROFILE FOOTER TEXT FOR COPYRIGHT AREA */}
+            <span>{branding.footer}</span>
+            <Heart className="w-3.5 h-3.5 text-primary fill-primary animate-pulse relative top-[1px]" />
           </div>
         </div>
       </div>

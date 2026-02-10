@@ -1,166 +1,179 @@
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import { pb } from '../lib/pocketbase';
+import { ActionSection } from '../types';
+import ScrollReveal from './ScrollReveal';
+import { getIcon } from '../lib/icons';
+
+// Corner Arc SVG Component
+const CornerArc = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 40 40" 
+    className={`absolute w-8 h-8 pointer-events-none transition-all duration-500 text-white/20 ${className}`}
+  >
+    <path 
+      d="M1 40 L1 20 Q1 1 20 1 L40 1" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="1.5" 
+    />
+  </svg>
+);
 
 const CTA: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [data, setData] = useState<ActionSection | null>(null);
   
-  // Hide CTA on Contact, Privacy, Terms, and Project Detail pages (routes starting with /works/ but not /works itself)
   const isProjectDetail = location.pathname.startsWith('/works/') && location.pathname !== '/works';
   const hiddenRoutes = ['/contact', '/privacy-policy', '/terms-of-use'];
 
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const result = await pb.collection('action').getList<ActionSection>(1, 1, {
+                sort: '-created'
+            });
+            if (result.items.length > 0) {
+                setData(result.items[0]);
+            }
+        } catch (error) {
+            console.error("Failed to load action content:", error);
+        }
+    };
+    fetchData();
+  }, []);
+
   if (hiddenRoutes.includes(location.pathname) || isProjectDetail) return null;
 
+  const heading = data?.heading || "Luminous Design";
+  const subheading = data?.subheading || "Light folds around form, revealing layers of depth.";
+  const btnText = data?.button || "Activate";
+  const iconName = data?.icon || 'lightbulb';
+
   return (
-    <div className="w-full px-6 my-8">
-      {/* Complex SVG Filter - Tuned for smoothness */}
-      <svg className="absolute w-0 h-0" xmlns="http://www.w3.org/2000/svg">
+    <section className="w-full px-4 md:px-6 py-16 relative z-10 overflow-hidden perspective-1000">
+      
+      {/* SVG Filters */}
+      <svg width="0" height="0" className="absolute">
         <defs>
-            <filter id="turbulent-displace" colorInterpolationFilters="sRGB" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="3" result="noise1" seed="1">
-                     <animate attributeName="seed" values="1;5;2;1" dur="4s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feOffset in="noise1" dx="0" dy="0" result="offsetNoise1">
-                    <animate attributeName="dy" values="500; 0" dur="4s" repeatCount="indefinite" calcMode="linear" />
-                </feOffset>
-
-                <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="3" result="noise2" seed="1">
-                    <animate attributeName="seed" values="1;3;6;1" dur="4s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feOffset in="noise2" dx="0" dy="0" result="offsetNoise2">
-                    <animate attributeName="dy" values="0; -500" dur="4s" repeatCount="indefinite" calcMode="linear" />
-                </feOffset>
-
-                <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="3" result="noise1" seed="2">
-                    <animate attributeName="seed" values="2;4;1;2" dur="4s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feOffset in="noise1" dx="0" dy="0" result="offsetNoise3">
-                    <animate attributeName="dx" values="500; 0" dur="4s" repeatCount="indefinite" calcMode="linear" />
-                </feOffset>
-
-                <feTurbulence type="turbulence" baseFrequency="0.025" numOctaves="3" result="noise2" seed="2">
-                    <animate attributeName="seed" values="2;6;3;2" dur="4s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feOffset in="noise2" dx="0" dy="0" result="offsetNoise4">
-                    <animate attributeName="dx" values="0; -500" dur="4s" repeatCount="indefinite" calcMode="linear" />
-                </feOffset>
-
-                <feComposite in="offsetNoise1" in2="offsetNoise2" result="part1" />
-                <feComposite in="offsetNoise3" in2="offsetNoise4" result="part2" />
-                <feBlend in="part1" in2="part2" mode="color-dodge" result="combinedNoise" />
-
-                <feDisplacementMap in="SourceGraphic" in2="combinedNoise" scale="30" xChannelSelector="R" yChannelSelector="B" />
-            </filter>
+          <filter id="strong-inner">
+            <feFlood floodColor="white" floodOpacity="0.15" result="flood" />
+            <feComposite operator="out" in="flood" in2="SourceGraphic" result="mask" />
+            <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="dilated" />
+            <feGaussianBlur stdDeviation="2" in="dilated" result="blurred" />
+            <feComposite operator="in" in="blurred" in2="SourceAlpha" result="shadow" />
+            <feComposite operator="atop" in="shadow" in2="SourceGraphic" result="final" />
+          </filter>
         </defs>
       </svg>
 
+      <ScrollReveal animation="fade-up" duration={1000}>
+        <div className="max-w-4xl mx-auto py-4">
+            
+            {/* Wrapper for Floating Arcs & 3D Effect */}
+            <div className="relative group p-4 perspective-container">
+                
+                {/* Floating Corner Arcs - Slightly smaller and tighter */}
+                <div className="absolute inset-0 pointer-events-none z-0 transition-transform duration-700 group-hover:scale-[1.02]">
+                    <CornerArc className="top-0 left-0 group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:text-primary/40" />
+                    <CornerArc className="top-0 right-0 rotate-90 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-primary/40" />
+                    <CornerArc className="bottom-0 right-0 rotate-180 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:text-primary/40" />
+                    <CornerArc className="bottom-0 left-0 -rotate-90 group-hover:-translate-x-1 group-hover:translate-y-1 group-hover:text-primary/40" />
+                </div>
+
+                {/* THE CARD */}
+                <div className="
+                    relative rounded-[2rem] overflow-hidden select-none 
+                    border border-white/10 
+                    bg-[#050505]/60 backdrop-blur-xl
+                    shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] 
+                    transition-all duration-700 ease-out
+                    group-hover:shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7),0_0_20px_rgba(255,255,255,0.05)]
+                    group-hover:-translate-y-2
+                    transform-gpu preserve-3d
+                ">
+                    
+                    {/* 1. SHINE / SHOE EFFECT */}
+                    {/* A sheen moving across on hover */}
+                    <div className="absolute inset-0 z-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out"></div>
+                    </div>
+
+                    {/* 2. LIGHTING & GLASS LAYERS */}
+                    <div className="absolute inset-0 pointer-events-none">
+                         {/* Top Slit Highlight */}
+                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-30 group-hover:opacity-80 group-hover:w-[70%] transition-all duration-700"></div>
+                         
+                         {/* Inner Glow */}
+                         <div className="absolute inset-0 bg-radial-gradient from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    </div>
+
+                    {/* 3. CONTENT */}
+                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between p-8 md:p-10 gap-8">
+                        
+                        {/* Icon & Text - Reduced Sizes */}
+                        <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left flex-1">
+                            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center relative shrink-0">
+                                {/* Back Glow for Icon */}
+                                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                
+                                <div style={{ filter: 'url(#strong-inner)' }} className="relative z-10 text-white/70 group-hover:text-white transition-colors duration-500 transform group-hover:scale-110 group-hover:rotate-6">
+                                    {getIcon(iconName, { 
+                                        size: 48, 
+                                        strokeWidth: 1.5,
+                                        className: "drop-shadow-lg"
+                                    })}
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <h2 className="text-2xl md:text-3xl font-bold text-white font-display tracking-tight leading-none group-hover:text-shadow-glow transition-all">
+                                    {heading}
+                                </h2>
+                                <p className="text-textMuted text-sm md:text-base font-medium max-w-sm leading-relaxed">
+                                    {subheading}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Outlined Button - Replaces Slider */}
+                        <button 
+                            onClick={() => navigate('/contact')}
+                            className="
+                                group relative px-8 py-3 rounded-full 
+                                bg-[#050505] border-2 border-primary 
+                                text-primary font-bold uppercase tracking-widest text-sm
+                                transition-all duration-300 ease-out
+                                hover:bg-primary hover:text-black 
+                                hover:shadow-[0_0_30px_var(--primary)] hover:scale-105
+                                flex items-center gap-3 shrink-0
+                            "
+                        >
+                            <span className="relative z-10">{btnText}</span>
+                            <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+      </ScrollReveal>
+      
       <style>{`
-        .electric-card-root {
-          --electric-border-color: #22d3ee;
-          --electric-light-color: #a5f3fc; 
-          --card-bg: transparent; /* Transparent background */
+        .perspective-container {
+            perspective: 1000px;
         }
-        
-        .inner-container {
-            position: relative;
-            width: 100%;
-            /* Let content dictate height, but maintain min-height */
-            min-height: 240px; 
+        .preserve-3d {
+            transform-style: preserve-3d;
         }
-
-        .border-effect-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            filter: url(#turbulent-displace);
-            pointer-events: none;
-        }
-
-        .electric-border {
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            border: 2px solid var(--electric-border-color);
-        }
-
-        .glow-layer-1 {
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            border: 2px solid var(--electric-border-color);
-            filter: blur(2px);
-            opacity: 0.7;
-        }
-
-        .glow-layer-2 {
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            border: 2px solid var(--electric-border-color);
-            filter: blur(4px);
-            opacity: 0.5;
-        }
-        
-        .background-glow {
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            filter: blur(32px);
-            opacity: 0.3;
-            /* background: linear-gradient(-30deg, var(--electric-light-color), transparent); Removed for transparency */
-            z-index: -1;
-            transform: scale(1.02);
-        }
-
-        .main-card {
-            width: 100%;
-            height: 100%;
-            border-radius: 20px;
-            overflow: hidden;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            background-color: var(--card-bg);
+        .text-shadow-glow {
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
       `}</style>
-
-      <div className="electric-card-root max-w-4xl mx-auto relative">
-          <div className="inner-container">
-             
-             {/* 1. Background Layer (Bottom) */}
-             <div className="main-card"></div>
-
-             {/* 2. Electric Border Layers (Middle) */}
-             <div className="border-effect-container">
-                 <div className="electric-border"></div>
-                 <div className="glow-layer-1"></div>
-                 <div className="glow-layer-2"></div>
-             </div>
-
-             {/* 3. Content Layer (Top - Z-Index 30 ensures visibility over border effects) */}
-             <div className="relative z-30 flex flex-col items-center justify-center text-center py-12 px-8 h-full min-h-[240px]">
-                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 font-display max-w-lg leading-tight">
-                      Ready to build something <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-green-400">extraordinary?</span>
-                  </h2>
-                  
-                  <p className="text-textMuted font-medium text-sm max-w-md mx-auto mb-6 leading-relaxed">
-                      I'm currently looking for new opportunities. Whether you have a question or just want to say hi, I'll try my best to get back to you!
-                  </p>
-                  
-                  <Link to="/contact" className="btn btn-white group relative">
-                      <Mail size={16} /> Start a Conversation
-                  </Link>
-             </div>
-          </div>
-          
-          <div className="background-glow"></div>
-      </div>
-    </div>
+    </section>
   );
 };
 

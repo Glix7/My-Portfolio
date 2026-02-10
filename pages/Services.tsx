@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PenTool, Monitor, Smartphone, Globe, BarChart, Camera, ArrowRight } from 'lucide-react';
+import { PenTool, Monitor, Smartphone, Globe, BarChart3, Camera, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const SERVICES_LIST = [
@@ -29,7 +29,7 @@ const SERVICES_LIST = [
     color: 'bg-accent'
   },
   {
-    icon: <BarChart size={32} />,
+    icon: <BarChart3 size={32} />,
     title: 'SEO & Analytics',
     desc: 'Optimizing your digital presence for search engines and setting up tracking to measure success.',
     color: 'bg-retroBlue'

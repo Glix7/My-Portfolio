@@ -36,12 +36,13 @@ const Marquee: React.FC<MarqueeProps> = ({ items, direction = 'left', variant = 
       >
         {/* Render items multiple times to create seamless loop */}
         {[...items, ...items, ...items, ...items].map((item, idx) => (
-          <div key={idx} className="flex items-center gap-12 pr-12">
+          <div key={idx} className="flex items-center gap-8 pr-8">
              <div className={`text-xl font-bold uppercase tracking-wider ${variant === 'solid' ? 'text-black' : 'text-textMuted/50'}`}>
                {item}
              </div>
              {variant === 'solid' && <Star size={20} fill="black" className="text-black animate-spin-slow shrink-0" />}
-             {variant === 'transparent' && <div className="w-1.5 h-1.5 rounded-full bg-primary/30 shrink-0"></div>}
+             {/* Updated separator to be a visible primary dot */}
+             {variant === 'transparent' && <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 shadow-[0_0_8px_var(--primary)]"></div>}
           </div>
         ))}
       </div>

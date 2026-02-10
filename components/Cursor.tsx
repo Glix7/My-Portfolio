@@ -1,12 +1,19 @@
 
 import React, { useEffect, useRef } from 'react';
+import { useProfile } from '../context/ProfileContext';
 
 const Cursor: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { settings } = useProfile();
+  const colorRef = useRef('#22d3ee');
 
   useEffect(() => {
-    // Check if the device uses a fine pointer (like a mouse)
-    // This prevents the cursor from rendering on mobile/touch-only devices
+    if (settings?.primary_color) {
+        colorRef.current = settings.primary_color;
+    }
+  }, [settings]);
+
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.matchMedia) {
        const isFinePointer = window.matchMedia("(pointer: fine)").matches;
        if (!isFinePointer) return;
@@ -18,37 +25,18 @@ const Cursor: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Palette based on tailwind config
-    const PALETTE = [
-      '#C4A1FF', // Retro Purple
-      '#FF9ECA', // Retro Pink
-      '#D4FF9E', // Retro Green
-      '#FFF59E', // Retro Yellow
-      '#9ECAFF', // Retro Blue
-    ];
-
-    // State
     let mouse = { x: 0, y: 0 };
     let head = { x: 0, y: 0 };
-    
-    // Trail history
     let trail: { x: number; y: number }[] = [];
-    const MAX_TRAIL_LENGTH = 12; // Shorter trail for a snappier feel
+    const MAX_TRAIL_LENGTH = 12;
     
-    // Particles
     let particles: { 
-      x: number; 
-      y: number; 
-      vx: number; 
-      vy: number; 
-      life: number; 
-      color: string;
-      size: number;
+      x: number; y: number; vx: number; vy: number; 
+      life: number; color: string; size: number;
     }[] = [];
 
     let isActive = false;
 
-    // Canvas Resize
     const handleResize = () => {
       const dpr = window.devicePixelRatio || 1;
       canvas.width = window.innerWidth * dpr;
@@ -61,12 +49,9 @@ const Cursor: React.FC = () => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // Mouse Tracking
     const updateMouse = (x: number, y: number) => {
       mouse.x = x;
       mouse.y = y;
-      
-      // Initialize position on first move
       if (!isActive) {
         head = { x, y };
         isActive = true;
@@ -74,61 +59,48 @@ const Cursor: React.FC = () => {
     };
 
     const onMouseMove = (e: MouseEvent) => updateMouse(e.clientX, e.clientY);
-    
     window.addEventListener('mousemove', onMouseMove);
 
-    // Animation Loop
     let animationFrameId: number;
 
     const render = () => {
-      // Clear with respect to DPR
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      
+      const primaryColor = colorRef.current;
 
       if (isActive) {
-        // 1. Instant Movement (No lag)
         head.x = mouse.x;
         head.y = mouse.y;
 
-        // 2. Trail Logic
         trail.push({ x: head.x, y: head.y });
         if (trail.length > MAX_TRAIL_LENGTH) {
           trail.shift();
         }
 
-        // 3. Spawn Particles
-        const dx = mouse.x - (trail[trail.length - 2]?.x || mouse.x);
-        const dy = mouse.y - (trail[trail.length - 2]?.y || mouse.y);
-        const speed = Math.hypot(dx, dy);
-        
-        if (speed > 2 && Math.random() > 0.5) {
-             const vxBase = (Math.random() - 0.5) * 2;
-             const vyBase = (Math.random() - 0.5) * 2;
-             
+        if (Math.random() > 0.5) {
              particles.push({
                x: head.x + (Math.random() - 0.5) * 4,
                y: head.y + (Math.random() - 0.5) * 4,
-               vx: vxBase, 
-               vy: vyBase,
+               vx: (Math.random() - 0.5) * 2, 
+               vy: (Math.random() - 0.5) * 2,
                life: 1.0,
-               color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+               color: primaryColor,
                size: Math.random() * 2 + 1
              });
         }
 
-        // 4. Update Particles
         for (let i = particles.length - 1; i >= 0; i--) {
           const p = particles[i];
           p.x += p.vx;
           p.y += p.vy;
-          p.life -= 0.05; // Fade out slightly faster
-          p.size *= 0.92; // Shrink
+          p.life -= 0.05;
+          p.size *= 0.92;
           
           if (p.life <= 0) {
             particles.splice(i, 1);
           }
         }
 
-        // 5. Draw Trail
         if (trail.length > 1) {
           ctx.beginPath();
           ctx.moveTo(trail[0].x, trail[0].y);
@@ -144,21 +116,22 @@ const Cursor: React.FC = () => {
           ctx.lineJoin = 'round';
           ctx.lineWidth = 4;
           
+          // Gradient Trail
           const gradient = ctx.createLinearGradient(
             trail[0].x, trail[0].y, 
             trail[trail.length-1].x, trail[trail.length-1].y
           );
-          gradient.addColorStop(0, 'rgba(196, 161, 255, 0)');
-          gradient.addColorStop(1, 'rgba(196, 161, 255, 0.8)');
+          
+          gradient.addColorStop(0, `${primaryColor}00`);
+          gradient.addColorStop(1, primaryColor);
           
           ctx.strokeStyle = gradient;
           ctx.shadowBlur = 4;
-          ctx.shadowColor = '#C4A1FF';
+          ctx.shadowColor = primaryColor;
           ctx.stroke();
           ctx.shadowBlur = 0;
         }
 
-        // Draw Particles
         for (const p of particles) {
           ctx.globalAlpha = p.life;
           ctx.fillStyle = p.color;
@@ -168,7 +141,6 @@ const Cursor: React.FC = () => {
         }
         ctx.globalAlpha = 1;
 
-        // Draw Head
         ctx.fillStyle = '#000000';
         ctx.beginPath();
         ctx.arc(head.x, head.y, 4, 0, Math.PI * 2);
@@ -193,12 +165,7 @@ const Cursor: React.FC = () => {
     };
   }, []);
 
-  return (
-    <canvas 
-      ref={canvasRef} 
-      className="fixed inset-0 pointer-events-none z-[9999]"
-    />
-  );
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-[9999]" />;
 };
 
 export default Cursor;
