@@ -3,9 +3,11 @@ import PocketBase from 'pocketbase';
 
 // 1. Initialize the client
 // We use optional chaining (?.) to safely access env. If env is undefined, it falls back to the hardcoded URL.
-const url = (import.meta as any).env?.VITE_POCKETBASE_URL || 'https://pb-harshi.tegota.com';
+const url = (import.meta as any).env?.VITE_POCKETBASE_URL || 'https://pocketbase-production-eb6c.up.railway.app';
 
 export const pb = new PocketBase(url);
+
+pb.autoCancellation(false);
 
 // 2. Helper to get full image URL
 export const getImageUrl = (collectionId: string, recordId: string, fileName: string) => {
