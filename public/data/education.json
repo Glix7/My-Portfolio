@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "collectionId": "pbc_3206658122",
+      "collectionName": "education",
+      "created": "2026-01-26 10:57:28.493Z",
+      "degree": "Class X (ICSE)",
+      "description": "Completed High School Education with 86% aggregate.",
+      "id": "education100000",
+      "institution": "St. Francis’ Convent Inter College, Jhansi",
+      "updated": "2026-01-26 10:57:28.493Z",
+      "year": "2019 - 2020"
+    },
+    {
+      "collectionId": "pbc_3206658122",
+      "collectionName": "education",
+      "created": "2026-01-26 10:57:48.677Z",
+      "degree": "Class XII (CBSE)",
+      "description": "Completed Higher Secondary Education with 70% aggregate.",
+      "id": "education200000",
+      "institution": "Mahatma Hansraj Modern School, Jhansi",
+      "updated": "2026-01-26 10:57:48.677Z",
+      "year": "2021 - 2022"
+    },
+    {
+      "collectionId": "pbc_3206658122",
+      "collectionName": "education",
+      "created": "2026-01-26 10:58:08.916Z",
+      "degree": "B.Tech in Computer Science (AI/ML)",
+      "description": "Specializing in Artificial Intelligence and Machine Learning. Current CGPA: 8.3.",
+      "id": "education300000",
+      "institution": "Galgotias College of Engineering and Technology",
+      "updated": "2026-01-26 10:58:08.916Z",
+      "year": "2023 - 2027"
+    }
+  ]
+}

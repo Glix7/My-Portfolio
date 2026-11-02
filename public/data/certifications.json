@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "collectionId": "pbc_484836162",
+      "collectionName": "certifications",
+      "created": "2026-01-26 10:48:01.357Z",
+      "id": "cert00000000001",
+      "issuer": "Arexa & Bharat XR",
+      "link": "https://aistudio.google.com/",
+      "name": "SnapAR Hands-on Augmented Reality Lens Creation",
+      "updated": "2026-01-26 10:48:01.357Z"
+    },
+    {
+      "collectionId": "pbc_484836162",
+      "collectionName": "certifications",
+      "created": "2026-01-26 10:48:35.857Z",
+      "id": "cert00000000002",
+      "issuer": "IBM SkillsBuild",
+      "link": "https://aistudio.google.com/",
+      "name": "Data Classification and Summarization IBM Granite",
+      "updated": "2026-01-26 10:48:35.857Z"
+    },
+    {
+      "collectionId": "pbc_484836162",
+      "collectionName": "certifications",
+      "created": "2026-01-26 10:48:58.715Z",
+      "id": "cert00000000003",
+      "issuer": "Microsoft & Simplilearn",
+      "link": "https://xxx.tegota.org/",
+      "name": "Introduction to Prompt Engineering with GitHub Copilot",
+      "updated": "2026-01-26 10:48:58.715Z"
+    },
+    {
+      "collectionId": "pbc_484836162",
+      "collectionName": "certifications",
+      "created": "2026-01-26 10:49:17.207Z",
+      "id": "cert00000000004",
+      "issuer": "Oracle University",
+      "link": "https://aistudio.google.com/",
+      "name": "Oracle Certified Foundations Associate AI Foundations",
+      "updated": "2026-01-26 10:49:17.207Z"
+    }
+  ]
+}

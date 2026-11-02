@@ -2,19 +2,19 @@
 import fs from 'fs';
 
 // Configuration
-const PB_URL = 'https://pb-harshi.tegota.com';
+const SITE_URL = 'harishama.in'; // your live domain
+const SETTINGS_PATH = './public/data/settings.json'; // written by scripts/export-pocketbase.mjs
 const INDEX_PATH = './index.html';
 
 async function updateMeta() {
-   console.log('🔄 Connecting to PocketBase to fetch SEO settings...');
+   console.log('🔄 Reading exported SEO settings...');
    
    try {
-       // Fetch the latest settings record
-       const res = await fetch(`${PB_URL}/api/collections/settings/records?sort=-created&perPage=1`);
-       const data = await res.json();
+       // Read the exported settings record (no server needed)
+       const data = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf-8'));
        
        if (!data.items || data.items.length === 0) {
-           console.error('❌ No settings record found in PocketBase. Please create one in the "settings" collection.');
+           console.error('❌ No settings record in public/data/settings.json. Run scripts/export-pocketbase.mjs first.');
            return;
        }
 
@@ -58,7 +58,7 @@ async function updateMeta() {
        
        replaceMeta('og:title', ogTitle, true);
        replaceMeta('og:description', ogDesc, true);
-       replaceMeta('og:url', 'https://imrja8.github.io', true); // Ensure this matches your live domain
+       replaceMeta('og:url', SITE_URL, true);
 
        // 4. Update Twitter Card
        replaceMeta('twitter:title', ogTitle);
@@ -66,7 +66,7 @@ async function updateMeta() {
 
        // 5. Update Images (Construct full URL)
        if (settings.og_image) {
-           const imgUrl = `${PB_URL}/api/files/${settings.collectionId}/${settings.id}/${settings.og_image}`;
+           const imgUrl = `${SITE_URL}/files/${settings.collectionId}/${settings.id}/${settings.og_image}`;
            replaceMeta('og:image', imgUrl, true);
            replaceMeta('twitter:image', imgUrl);
            console.log(`   Updated Social Images`);

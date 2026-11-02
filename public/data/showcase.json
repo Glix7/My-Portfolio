@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "collectionId": "pbc_1425462473",
+      "collectionName": "showcase",
+      "created": "2026-01-26 10:54:55.421Z",
+      "icon": "Target",
+      "id": "stat10000000000",
+      "label": "CGPA",
+      "updated": "2026-01-26 10:54:55.421Z",
+      "value": "8.3"
+    },
+    {
+      "collectionId": "pbc_1425462473",
+      "collectionName": "showcase",
+      "created": "2026-01-26 10:55:15.543Z",
+      "icon": "Zap",
+      "id": "stat20000000000",
+      "label": "Projects",
+      "updated": "2026-01-26 10:56:24.108Z",
+      "value": "3+"
+    },
+    {
+      "collectionId": "pbc_1425462473",
+      "collectionName": "showcase",
+      "created": "2026-01-26 10:55:47.527Z",
+      "icon": "FileCode",
+      "id": "stat30000000000",
+      "label": "Certifications",
+      "updated": "2026-01-26 10:55:47.527Z",
+      "value": "4"
+    },
+    {
+      "collectionId": "pbc_1425462473",
+      "collectionName": "showcase",
+      "created": "2026-01-26 10:56:06.830Z",
+      "icon": "Briefcase",
+      "id": "stat40000000000",
+      "label": "Tech Stack",
+      "updated": "2026-01-26 10:56:06.830Z",
+      "value": "15+"
+    }
+  ]
+}

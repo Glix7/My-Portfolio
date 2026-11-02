@@ -18,7 +18,7 @@ const Admin: React.FC = () => {
                 
                 <h1 className="text-2xl font-bold font-display uppercase tracking-wider mb-2">Backend Access</h1>
                 <p className="text-textMuted text-sm mb-8">
-                    Go to PocketBase Dashboard
+                    Content is edited in a PocketBase running on your own machine, then exported to the site (npm run export-data). This button works only while it is running locally.
                 </p>
 
                 <div className="space-y-4">

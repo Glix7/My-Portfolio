@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "collectionId": "pbc_3160742690",
+      "collectionName": "taglines",
+      "created": "2026-01-26 10:30:04.469Z",
+      "id": "tagline00000001",
+      "line1": "Building The Future Of",
+      "line2": "Intelligent Applications",
+      "updated": "2026-01-26 10:30:04.469Z"
+    },
+    {
+      "collectionId": "pbc_3160742690",
+      "collectionName": "taglines",
+      "created": "2026-01-26 10:30:15.213Z",
+      "id": "tagline00000002",
+      "line1": "Turning AI Ideas Into",
+      "line2": "Scalable Products",
+      "updated": "2026-01-26 10:30:15.213Z"
+    },
+    {
+      "collectionId": "pbc_3160742690",
+      "collectionName": "taglines",
+      "created": "2026-01-26 10:30:24.568Z",
+      "id": "tagline00000003",
+      "line1": "Transforming Data Into",
+      "line2": "Clear Insights",
+      "updated": "2026-01-26 10:30:24.568Z"
+    }
+  ]
+}

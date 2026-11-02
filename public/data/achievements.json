@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "collectionId": "pbc_2260351736",
+      "collectionName": "achievements",
+      "created": "2026-01-26 10:49:34.568Z",
+      "description": "AI-ML Departmental Society and Class Representative, supporting coordination and student activities.",
+      "icon": "Trophy",
+      "id": "achieve00000001",
+      "title": "Sergeant Secretary",
+      "updated": "2026-01-26 10:49:34.568Z"
+    },
+    {
+      "collectionId": "pbc_2260351736",
+      "collectionName": "achievements",
+      "created": "2026-01-26 10:49:47.656Z",
+      "description": "Core Member & Co-Leader at Team Tegota, contributing to key technical initiatives.",
+      "icon": "Award",
+      "id": "achieve00000002",
+      "title": "SIH College Pre-Qualifier",
+      "updated": "2026-01-26 10:49:47.656Z"
+    },
+    {
+      "collectionId": "pbc_2260351736",
+      "collectionName": "achievements",
+      "created": "2026-01-26 10:50:05.149Z",
+      "description": "Cohort 2 ’25. Recognized for excellence in Google Cloud skills and labs.",
+      "icon": "Crown",
+      "id": "achieve00000003",
+      "title": "Google Arcade Legend",
+      "updated": "2026-01-26 10:50:05.149Z"
+    }
+  ]
+}

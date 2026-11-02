@@ -1,0 +1,70 @@
+{
+  "items": [
+    {
+      "collectionId": "pbc_3793906494",
+      "collectionName": "skills",
+      "created": "2026-01-26 10:46:23.494Z",
+      "desc": "Building intelligent features with Gemini API, OpenAI, and ML workflows.",
+      "icon": "Brain",
+      "id": "skill0000000001",
+      "isFeatured": true,
+      "title": "AI & ML",
+      "updated": "2026-01-26 10:46:23.494Z"
+    },
+    {
+      "collectionId": "pbc_3793906494",
+      "collectionName": "skills",
+      "created": "2026-01-26 10:46:36.688Z",
+      "desc": "Modern UI with React 19, Next.js 15, Tailwind CSS, and Shadcn UI.",
+      "icon": "Layout",
+      "id": "skill0000000002",
+      "isFeatured": false,
+      "title": "Frontend Dev",
+      "updated": "2026-01-26 10:46:36.688Z"
+    },
+    {
+      "collectionId": "pbc_3793906494",
+      "collectionName": "skills",
+      "created": "2026-01-26 10:46:53.001Z",
+      "desc": "Robust APIs using Python, FastAPI, Node.js, and Express.",
+      "icon": "Server",
+      "id": "skill0000000003",
+      "isFeatured": false,
+      "title": "Backend Dev",
+      "updated": "2026-01-26 10:46:53.001Z"
+    },
+    {
+      "collectionId": "pbc_3793906494",
+      "collectionName": "skills",
+      "created": "2026-01-26 10:47:09.916Z",
+      "desc": "Data management with MongoDB, NeonDB, Prisma, and Redis.",
+      "icon": "Database",
+      "id": "skill0000000004",
+      "isFeatured": true,
+      "title": "Databases",
+      "updated": "2026-01-26 10:47:09.916Z"
+    },
+    {
+      "collectionId": "pbc_3793906494",
+      "collectionName": "skills",
+      "created": "2026-01-26 10:47:22.230Z",
+      "desc": "Deployment on Vercel, Docker containerization, and cloud infrastructure.",
+      "icon": "Cloud",
+      "id": "skill0000000005",
+      "isFeatured": true,
+      "title": "Cloud & DevOps",
+      "updated": "2026-01-26 10:47:22.230Z"
+    },
+    {
+      "collectionId": "pbc_3793906494",
+      "collectionName": "skills",
+      "created": "2026-01-26 10:47:35.103Z",
+      "desc": "Proficient in Java, Python, JavaScript, and TypeScript.",
+      "icon": "Code",
+      "id": "skill0000000006",
+      "isFeatured": false,
+      "title": "Languages",
+      "updated": "2026-01-26 10:47:35.103Z"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "items": [
+    {
+      "category": "Developer Tools",
+      "challenge": "Code reviews are a critical bottleneck in the software development lifecycle. Junior developers often lack immediate feedback loops to improve their code quality before submission.",
+      "collectionId": "pbc_484305853",
+      "collectionName": "projects",
+      "created": "2026-01-26 10:38:48.348Z",
+      "description": "Automated code quality checker that detects bugs and suggests improvements in real-time using OpenAI.",
+      "id": "project00000001",
+      "image": "1lx83cftgtw_nfbf05lukm.jpeg",
+      "keyFeatures": [
+        "Real-time bug detection.",
+        "Automated code quality scoring.",
+        "Intuitive submission interface.",
+        "Improved developer workflow efficiency."
+      ],
+      "liveUrl": "https://xxx.tegota.org/works/ai-code-reviewer",
+      "modules": [
+        {
+          "title": "Static & Semantic Analysis",
+          "desc": "Combines traditional linting with AI semantic understanding to catch both syntax errors and logical flaws."
+        },
+        {
+          "title": "Refactoring Engine",
+          "desc": "Generates optimized versions of submitted code, highlighting performance improvements."
+        },
+        {
+          "title": "Review History Tracker",
+          "desc": "MongoDB storage of past reviews to track improvement in code quality over time."
+        }
+      ],
+      "outcome": "Streamlined the review process for student projects, allowing for instant feedback on assignments. Detected common security flaws like SQL injection risks in initial drafts.",
+      "repoUrl": "https://xxx.tegota.org/works/ai-code-reviewer",
+      "solution": "Created an Al-driven Code Reviewer that integrates directly into the developer workflow. Users can paste code snippets to receive instant feedback. The system analyzes code for potential runtime errors, security vulnerabilities, and adherence to clean code principles.",
+      "techStack": [
+        "React.js",
+        "Node.js",
+        "MongoDB",
+        "REST APIs",
+        "OpenAI API"
+      ],
+      "title": "AI Code Reviewer",
+      "updated": "2026-01-26 10:38:48.348Z",
+      "year": "2023"
+    },
+    {
+      "category": "FinTech AI",
+      "challenge": "Manual expense tracking is tedious and prone to user abandonment. Standard apps require navigating multiple forms to log a single coffee purchase.",
+      "collectionId": "pbc_484305853",
+      "collectionName": "projects",
+      "created": "2026-01-26 10:42:37.902Z",
+      "description": "An intelligent expense tracker that categorizes transactions and provides spending insights using Natural Language Processing.",
+      "id": "project00000002",
+      "image": "2s6yujxny9v_389xj1c2af.jpeg",
+      "keyFeatures": [
+        "Automatic transaction categorization.",
+        "Spending analysis and insights.",
+        "Responsive dashboard with real-time charts.",
+        "Personalized financial recommendations."
+      ],
+      "liveUrl": "https://xxx.tegota.org/works/ai-expense-tracker",
+      "modules": [
+        {
+          "title": "NLP Transaction Parser",
+          "desc": "A Python service utilizing Gemini API to identify intents and entities from free-text inputs, converting them to JSON."
+        },
+        {
+          "title": "Real-time Dashboard",
+          "desc": "React.js frontend using Recharts to render live spending breakdowns by category, time, and merchant."
+        },
+        {
+          "title": "Smart Budget Alerts",
+          "desc": "Background service that monitors category thresholds and triggers alerts when spending velocity exceeds set limits."
+        }
+      ],
+      "outcome": "Reduced the time required to log expenses by approximately 80%, leading to more consistent tracking habits. The automatic categorization achieved high accuracy for common transaction types.",
+      "repoUrl": "https://xxx.tegota.org/works/ai-expense-tracker",
+      "solution": "Developed a \"Talk-to-Track\" system where users can input expenses via natural language text. The application uses an LLM to parse unstructured text into structured data (Amount, Category, Merchant) and stores it in MongoDB.",
+      "techStack": [
+        "Python",
+        "FastAPI",
+        "React.js",
+        "MongoDB",
+        "Gemini API",
+        "Node.js"
+      ],
+      "title": "AI Expense Tracker",
+      "updated": "2026-01-26 10:42:37.902Z",
+      "year": "2024"
+    },
+    {
+      "category": "Full Stack AI",
+      "challenge": "In an increasingly competitive job market, students often struggle to identify gaps in their resumes or prepare effectively for interviews. Traditional career counseling is expensive and not always available on-demand.",
+      "collectionId": "pbc_484305853",
+      "collectionName": "projects",
+      "created": "2026-01-26 10:45:54.380Z",
+      "description": "A comprehensive platform offering personalized career guidance, resume analysis, and interview prep using Gemini API.",
+      "id": "project00000003",
+      "image": "3eoetze0f18_dvpzqn9d2i.jpeg",
+      "keyFeatures": [
+        "Personalized Career Guidance powered by Gemini.",
+        "Modern UI with Tailwind + Shadcn.",
+        "Secure Authentication via Clerk.",
+        "Background job processing with Inngest."
+      ],
+      "liveUrl": "https://xxx.tegota.org/works/ai-career-coach",
+      "modules": [
+        {
+          "title": "Resume Parsing Engine",
+          "desc": "Utilizes PDF.js to extract raw text and Gemini API to structure data into experience, skills, and education blocks for analysis."
+        },
+        {
+          "title": "Mock Interview Simulator",
+          "desc": "A stateful chat interface that maintains conversation context, asking progressive technical questions and grading responses."
+        },
+        {
+          "title": "Job Matching Algorithm",
+          "desc": "Compares user skills vector with trending market requirements to suggest high-impact learning paths."
+        }
+      ],
+      "outcome": "Successfully deployed a prototype helping peer students improve their resume ATS scores. The mock interview feature reduced anxiety by providing a safe, private environment for practice.",
+      "repoUrl": "https://xxx.tegota.org/works/ai-career-coach",
+      "solution": "Built a full-stack AI Career Coach that acts as a 24/7 personal mentor. By leveraging Google's Gemini 1.5 Pro, the system extracts text from PDF resumes, scores them against job descriptions, and provides specific, actionable feedback. It also features a mock interview simulator.\r\n\r\n",
+      "techStack": [
+        "React 19",
+        "Next.js 15",
+        "Gemini API",
+        "NeonDB",
+        "Prisma"
+      ],
+      "title": "AI Career Coach",
+      "updated": "2026-01-26 10:45:54.380Z",
+      "year": "2025"
+    }
+  ]
+}

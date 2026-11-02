@@ -6,7 +6,6 @@
   "type": "module",
   "dependencies": {
     "lucide-react": "^0.460.0",
-    "pocketbase": "^0.21.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.28.0",
@@ -22,7 +21,8 @@
     "start": "vite",
     "build": "npm run refresh-meta && vite build",
     "preview": "vite preview",
-    "refresh-meta": "node update-meta.js"
+    "refresh-meta": "node update-meta.js",
+    "export-data": "node scripts/export-pocketbase.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

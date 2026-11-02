@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "aboutBio": "<p style=\"--tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; color: rgb(156, 163, 175); font-family: &quot;Plus Jakarta Sans&quot;, sans-serif; font-size: 16px; text-align: justify; background-color: rgb(8, 8, 8);\">Highly motivated B.Tech Computer Science student with a strong foundation in Data Science, Machine Learning, and AI-driven development. I specialize in building end-to-end ML workflows and intelligent features using modern AI models.</p><p style=\"--tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; margin-top: 16px; --tw-space-y-reverse: 0; color: rgb(156, 163, 175); font-family: &quot;Plus Jakarta Sans&quot;, sans-serif; font-size: 16px; text-align: justify; background-color: rgb(8, 8, 8);\">Proficient in Python, React, and Cloud tools, I have experience developing AI-integrated products and intuitive dashboards. I am eager to contribute to AI/ML teams by delivering impactful, data-powered solutions.</p>",
+      "about_text": "Ready to connect and collaborate, drop me a line and let's turn ideas into reality!",
+      "avatar": "harshiiii_7vkir3achw.png",
+      "button": " Download Resume",
+      "collectionId": "pbc_268752357",
+      "collectionName": "profile",
+      "created": "2026-01-26 09:19:57.303Z",
+      "firstName": "Harishama",
+      "footerText": "Designed & Built by Harishama",
+      "githubUrl": "https://github.com/Glix7/",
+      "id": "profile00000000",
+      "lastName": "Chaurasia",
+      "leetcodeUrl": "https://leetcode.com/u/Glix7/",
+      "linkedinUrl": "https://www.linkedin.com/in/harishama/",
+      "resume": "hc_resume_9rd374e6ud.pdf",
+      "tagline": "I bridge the gap between complex AI models and intuitive user interfaces. Specializing in Python, React, and Generative AI.",
+      "updated": "2026-01-26 14:45:02.687Z"
+    }
+  ]
+}

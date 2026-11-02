@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "answer": "I specialize in React 19, Next.js 15, Python, and integrating AI models like Gemini and OpenAI.",
+      "collectionId": "pbc_2923026773",
+      "collectionName": "faqs",
+      "created": "2026-01-26 10:51:54.293Z",
+      "id": "faq000000000001",
+      "question": "What tech stack do you specialize in?",
+      "updated": "2026-01-26 10:51:54.293Z"
+    },
+    {
+      "answer": "Yes, I have a strong foundation in Data Science and ML, skilled in building pipelines and intelligent features.",
+      "collectionId": "pbc_2923026773",
+      "collectionName": "faqs",
+      "created": "2026-01-26 10:52:04.897Z",
+      "id": "faq000000000002",
+      "question": "Can you build end-to-end ML workflows?",
+      "updated": "2026-01-26 10:52:04.897Z"
+    },
+    {
+      "answer": "Yes, I am a highly motivated B.Tech student eager to contribute to AI/ML teams.\r\n",
+      "collectionId": "pbc_2923026773",
+      "collectionName": "faqs",
+      "created": "2026-01-26 10:52:18.590Z",
+      "id": "faq000000000003",
+      "question": "Are you available for internships?",
+      "updated": "2026-01-26 10:52:18.590Z"
+    },
+    {
+      "answer": "Yes, I have experience deploying applications on Vercel and managing cloud infrastructure.\r\n\r\n",
+      "collectionId": "pbc_2923026773",
+      "collectionName": "faqs",
+      "created": "2026-01-26 10:52:34.429Z",
+      "id": "faq000000000004",
+      "question": "Do you have experience with Cloud platforms?",
+      "updated": "2026-01-26 10:52:34.429Z"
+    },
+    {
+      "answer": "I primarily use GitHub Projects and Notion for tracking tasks and documentation.",
+      "collectionId": "pbc_2923026773",
+      "collectionName": "faqs",
+      "created": "2026-01-26 10:52:46.312Z",
+      "id": "faq000000000005",
+      "question": "What is your preferred project management tool?",
+      "updated": "2026-01-26 10:52:46.312Z"
+    }
+  ]
+}
